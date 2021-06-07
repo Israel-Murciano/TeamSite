@@ -1,0 +1,94 @@
+// Define vars
+def image_name = "TeamSite_backend"
+def image = ""
+def container = ""
+def failed = false
+def requests_arr = ['apps','tasks','activities','shifts']
+#
+// Start pipeline
+pipeline {
+    agent {label 'master'}
+    stages {
+        stage ('Build Docker image'){
+            steps {
+                script {
+                    docker.build("${image_name}:${env.BUILD_ID}", "/var/lib/jenkins/workspace/${env.JOB_NAME}/backend")
+                }
+            }
+        }
+        stage ('Test image') {
+            steps {
+                script {
+                    container = sh (script: "docker run --rm -d -p 101:8182 ${image_name}:${env.BUILD_ID}", returnStdout: true)
+                    sleep(15) //Seconds
+                    status_result = sh (script: "docker inspect ${container}", returnStdout: true)                   
+                    if (!status_result.contains('running')) {
+                        failed = true
+                        echo "Error! could not start container, you probably fucked it up."
+                    }
+                    else {
+                        requests_arr.each{ tab ->
+                            get = new URL("http://MainServer:101/api/" + "${tab}").openConnection();
+                            get_response_code = get.getResponseCode();
+                            if (!(get_response_code.equals(200))) {
+                                failed = true
+                                echo "Error! could not send GET request to /api/${tab}, please fix it you dumm asshole."
+                            }
+                        }
+                        echo "Passed all connectivity tests!"
+                    }
+                }
+            }
+        }
+        stage('Tag Image') {
+            when {
+                expression { failed == false }
+            }
+            steps {
+                script {
+                    sh "docker tag ${image_name}:${env.BUILD_ID} MainServer:5000/${image_name}_${env.BUILD_ID}"
+                }
+            }
+        }
+        stage ('Push Image to Registry') {
+            when {
+                expression { failed == false }
+            }
+            steps {
+                script {
+                    sh "docker push MainServer:5000/${image_name}_${env.BUILD_ID}"
+                }
+            }
+        }
+        stage ('Remove Test Container') {
+            when {
+                expression { failed == false }
+            }
+            steps {
+                script {
+                    sh (script: "docker kill ${container}")
+                }
+            }
+        }
+        stage ('Deploy Backend to K8s Cluster') {
+            when {
+                expression { failed == false }
+            }
+            steps {
+                script {
+                  sh "sudo -i"
+                  sh "ssh KubeServere kubectl set image deployment/TeamSite backend=MainServer:5000/${image_name}_${env.BUILD_ID}"
+                }
+            }
+        }
+    }
+    post {
+        always {
+            script {
+                    echo 'Cleaning up previous images'
+                    //should add more cleanup!
+                    sh "docker image rm -f ${image_name}:${env.BUILD_ID}"
+            }
+        }
+    }
+}
