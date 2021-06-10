@@ -1,0 +1,13 @@
+.table3 {border-collapse: collapse; width: 10%;margin-left: 867px;}
+
+.table3 td, .table3 th {border: 1px;padding: 8px;}
+
+.table3 tr:hover {background-color: #ddd;}
+
+#Site A {color: rgb(2, 206, 2);}
+
+#Site B {color: rgb(34, 162, 241);}
+
+#noping {color: red;}
+
+h1 {text-align: center;}

@@ -1,0 +1,39 @@
+.MainDropDown {
+    width: 100%;
+    height: 100%;
+}
+
+.NestedDropDown {
+    width: 90%;
+    height: 80%;
+}
+
+.humans {
+    height: 50%;
+}
+
+.test {
+    color: purple;
+}
+
+#buttonRight {
+    margin-top: -40px;
+    margin-right: 15px;
+    margin-bottom: 15px;
+    float: right;
+    background-color: rgba(34, 34, 204, 0.884);
+    color: white;
+}
+
+#buttonLeft {
+    margin-top: -40px;
+    margin-left: 15px;
+    margin-bottom: 15px;
+    float: left;
+    background-color: #33b5e5;
+    color: white;
+}
+
+.fontSize {
+    font-size: 17px;
+}

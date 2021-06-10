@@ -1,0 +1,22 @@
+.main {
+    width: 30%;
+    margin: 25px auto;
+}
+.search-icon {
+    left: 34.9%
+}
+.has-search .form-control {
+    padding-left: 1.67rem;
+}
+
+.has-search .form-control-feedback {
+    position: absolute;
+    z-index: 2;
+    display: block;
+    width: 2.375rem;
+    height: 2.375rem;
+    line-height: 2.375rem;
+    text-align: center;
+    pointer-events: none;
+}
+

@@ -1,0 +1,27 @@
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 120px;
+}
+
+.width {
+    width: 500px;
+    margin: auto;
+}
+
+.iconCenter {
+    margin: auto;
+}
+
+h1 {
+    display: block;
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.error {
+    font-weight: bold;
+    font-size: 18px;
+    padding: auto;
+}

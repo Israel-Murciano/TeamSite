@@ -1,0 +1,124 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+}
+
+.App2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+}
+
+.ImageProgress {
+    opacity: 0;
+    display: block;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    position: absolute;
+    overflow: hidden;
+    transition: all 500ms ease-in-out 250ms;
+}
+
+.ImageProgress.Show {
+    opacity: 1;
+}
+
+.ImageProgress > .ImageProgressImage {
+    opacity: 0.3;
+    position: absolute;
+    background-position: center center;
+    background-size: cover;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.ImageProgress > .ImageProgressUploaded {
+    position: absolute;
+    background-position: center center;
+    background-size: cover;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    clip-path: inset(0% 0 0 0);
+    transition: all 250ms ease-in-out 0ms;
+}
+
+.ImagePreview {
+    display: block;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    position: absolute;
+    overflow: hidden;
+}
+
+.ImagePreview.Show {
+    opacity: 1;
+}
+
+.ImagePreview > div {
+    position: absolute;
+    background-size: cover;
+    filter: blur(20px);
+    left: -40px;
+    right: -40px;
+    bottom: -40px;
+    top: -40px;
+}
+
+.DropArea { 
+    background: #efefef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(80vw - 80px);
+    height: calc(80vh - 80px);
+    border: solid 40px transparent;
+    transition: all 250ms ease-in-out 0s;
+    position: relative;
+    margin-top: -150px;
+
+}
+
+.DropArea.Over {
+    border: solid 40px rgba(0, 0, 0, 0.2);
+}
+
+
+.DropArea.Uploading {
+    border-width: 0px;
+}
+
+.Status {
+    background: transparent;
+    display: block;
+    font-family: 'Helvetica', Arial, sans-serif;
+    color: rgb(43, 42, 44);
+    font-size: 60px;
+    font-weight: bold;
+    text-align: center;
+    line-height: calc(80vh - 80px);
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transition: all 250ms ease-in-out 0s;
+}
+
+.Status.Uploading {
+    background: rgba(0, 0, 0, 0.3);
+    color: white;
+}
+
+/*linear-gradient(to right, #1a2980, #26d0ce)*/

@@ -1,0 +1,10 @@
+.bodyfont{
+    font-size: 120%;
+    font-weight: bold;
+}
+
+.bodyfontred{
+    font-size: 120%;
+    font-weight: bold;
+    color: red;
+}

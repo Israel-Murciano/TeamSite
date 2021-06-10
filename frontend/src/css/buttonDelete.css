@@ -1,0 +1,29 @@
+.Delete {
+    background: #186691;
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50px;
+    height: 50px;
+    clip-path: polygon(0 0, 100% 100%, 100% 0);
+    transition: all 250ms ease-in-out 0s;
+    cursor: pointer;
+}
+
+.Delete:hover {
+    background: rgb(167, 56, 56);
+}
+
+.Delete > span {
+    color: white;
+    font-family: 'Helvetica', Arial, sans-serif;
+    font-weight: bold;
+    font-size: 24px;
+    height: 28px;
+    width: 22px;
+    line-height: 28px;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
