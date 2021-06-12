@@ -1,0 +1,90 @@
+// Define variables
+def image_name = "TeamSite_frontend"
+def container = "frontend_container"
+def failed = false
+
+// Start pipeline
+pipeline {
+    agent {label 'master'}
+    stages {
+        stage ('Build image'){
+            steps {
+                script {
+                    docker.build("${image_name}:${env.BUILD_ID}", "-f /var/lib/jenkins/workspace/${env.JOB_NAME}/frontend/Dockerfile /var/lib/jenkins/workspace/${env.JOB_NAME}/frontend")
+                }
+            }
+        }
+        stage ('Test image') {
+            steps {
+                script {
+                    sh "docker run --rm --name ${container} -d -p 100:80 ${image_name}:${env.BUILD_ID}"
+                    sleep(10)
+                    status_result = sh (script: "docker inspect ${container}", returnStdout: true)               
+                    if (!status_result.contains('running')) {
+                        failed = true
+                        sh "echo Error! could not start container, you probably fucked it up."
+                    }
+                    else {
+                        //config_result = sh (script: 'if grep -q www.TeamSite.com /var/lib/jenkins/workspace/' + env.JOB_NAME + '/frontend/src/config.js  && grep -q 80 /var/lib/jenkins/workspace/' + env.JOB_NAME +'/frontend/src/config.js ; then echo good; fi', returnStdout: true)
+                        config_result = sh (script:'cat /var/lib/jenkins/workspace/'+ env.JOB_NAME +'/frontend/src/config.js',returnStdout:true)
+                        if ( !config_result.contains('www.TeamSite.com') && !config_result.contains('80') ) {
+                            failed = true
+                            sh "echo Error! frontend/src/config.js is configured WRONG, you should fix its values to be: port 80 and hostname www.TeamSite.com ."
+                        }
+                    }
+                }
+            }
+        }
+        stage('Tag Image') {
+            when {
+                expression { failed == false }
+            }
+            steps {
+                script {
+                    sh "docker tag ${image_name}:${env.BUILD_ID} MainServer:5000/${image_name}_${env.BUILD_ID}"
+                }
+            }
+        }
+        stage ('Push Image to Registry') {
+            when {
+                expression { failed == false }
+            }
+            steps {
+                script {
+                    sh "docker push MainServer:5000/${image_name}_${env.BUILD_ID}"
+                }
+            }
+        }
+        stage ('Deploy Frontend to K8s Cluster') {
+            when {
+                expression { failed == false }
+            }
+            steps {
+                script {
+                    sh "sudo -i"
+                    sh "ssh KubeServer kubectl set image deployment/TeamSite frontend=MainServer:5000/${image_name}_${env.BUILD_ID}"
+                }
+            }
+        }
+    }
+    post {
+        always {
+            script {
+                    echo 'Cleaning up previous images'
+                    sh "docker kill ${container}"
+                    sh "docker rmi -f ${image_name}:${env.BUILD_ID}"
+                    image_exists = sh (script:"docker images -q MainServer:5000/${image_name}_${env.BUILD_ID} 2>/dev/null",returnStdout: true)
+                    if ( image_exists != "" )
+                    {
+                        sh "docker rmi -f MainServer:5000/${image_name}_${env.BUILD_ID}"
+                    }
+                    image_exists = sh (script:"docker images -q ${image_name}:${env.BUILD_ID} 2>/dev/null",returnStdout: true)
+                    if ( image_exists != "" )
+                    {
+                        sh "docker rmi -f ${image_name}:${env.BUILD_ID}"
+                    }
+
+            }
+        }
+    }
+}
